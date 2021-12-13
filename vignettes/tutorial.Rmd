@@ -3,19 +3,22 @@ title: "Project 3: mypackage Tutorial"
 author: "Peiran Chen"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{mypackage Tutorial}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Project 3: mypackage Tutorial}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 80
 ---
 
-```{r, include = FALSE}
+```{r, include = FALSE, warning = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 ```
 
-```{r setup}
+```{r setup, echo = FALSE, eval = TRUE, warning = FALSE}
 library(mypackage)
 ```
 
@@ -23,63 +26,76 @@ library(mypackage)
 
 This is the first part of the Project 3, where it includes tutorials for three
 functions that is in the mypackage. They are: my_t.test, my_lm, and my_knn_cv.
-
+And this project will be using data from the palmerpenguins pacakge.
 
 # Tutorial for my_t.test
+
 A tutorial for my_t.test testing the hypothesis that the mean body_mass_g of
 Adelie penguins is equal to 4000 (where the alternative is that the mean is less
-than 4000). Carefully interpret the results using a p-value cut-off of 
-$\alpha $= 0.05.
+than 4000). Carefully interpret the results using a p-value cut-off of $\alpha$=
+0.05.
 
- Our null hypothesis is that the mean body_mass_g of Adelie penguins is equal to 4000
- And our alternative is that the mean is less than 4000.
- 
-```{r}
+Our null hypothesis is that the mean body_mass_g of Adelie penguins is equal to
+4000 And our alternative is that the mean is less than 4000.
+
+$H_0 : \mu = 4000,$ $H_a : \mu < 4000$
+
+```{r, echo = FALSE, eval = TRUE}
 # Hypothesis teasing using my_t.test
-p_value <- my_t.test( x = (na.omit(my_penguins[species = Adelie])$body_mass_g), "less", 4000)$p_val
+ad_ttest <- my_t.test( x = (na.omit(my_penguins[species = Adelie])$body_mass_g), "less", 4000)
+ad_ttest
 ```
- Since we have p-value = `r round(p_value,3)`, which is greater than $\alpha = 0.05$.
- Hence, the result is not statistically significant and we failed to reject null hypothesis.
 
+Since we have p-value = `r round(ad_ttest$p_val,3)`(rounded), which is greater than
+$\alpha = 0.05$. Hence, the result is not statistically significant and we
+failed to reject null hypothesis. Therefore, we accept the null hypothesis and
+conclude that the mean body_mass_g of Adelie penguins is equal to 4000.
 
 # Tutorial for my_lm
+
 A tutorial for my_lm using flipper_length_mm as the independent variable and
-body_mass_g as the dependent variable. 
-```{r, warning = FALSE}
+body_mass_g as the dependent variable using from the my_penguins data set.
+
+```{r, echo = FALSE, eval = TRUE, warning = FALSE}
 # Regression Model Using flipper_length_mm as independent variable and 
 # body_mass_g as dependent variable.
 lm_model <- my_lm(body_mass_g~flipper_length_mm, data = my_penguins)
 lm_coefficients <- lm_model[,1]
 lm_model
 ```
- 
-Then, we will  be doing a two-sided hypothesis testing to see the relationship between
-flipper_length_mm and body_mass_g.
-Our null hypothesis is that flipper_length_mm has no significant influence on 
-body_mass_g. And our alternative hypothesis is that flipper_length_mm does
-have significant influence on body_mass_g.
+
+Then, we will be doing a two-sided hypothesis testing to see the relationship
+between flipper_length_mm and body_mass_g. Our null hypothesis is that
+flipper_length_mm has no significant influence on body_mass_g. And our
+alternative hypothesis is that flipper_length_mm does have significant influence
+on body_mass_g.
+
+$H_0 : \beta = 0,$ $H_a : \beta \neq 0$
 
 From the table, we can know that the coefficient for flipper_length_mm is
- `r lm_coefficients[2]`. We can interpret that 
-coefficient as the expected difference in the response between two
-observations differing by one unit in flipper_length_mm where other covariates
-stays the same.
+`r lm_coefficients[2]`. We can interpret that coefficient as the expected
+difference in the response between two observations differing by one unit in
+flipper_length_mm where other covariates stays the same.
 
-Also, since the Pr(>|t|) value for flipper_length_mm comes from the
-two-sided t test. And it's value of `r round(lm_model[2,4],3)` is smaller
-than the $\alpha = 0.05$. Hence, we can reject the null hypothesis and in favor 
-of our alternative hypothesis. Thus, we would say there's correlation between
-flipper_length_mm and body_mass_g
+Also, since the Pr(>\|t\|) value for flipper_length_mm comes from the two-sided
+t test. And it's value of `r lm_model[2,4]` is smaller than the $\alpha = 0.05$.
+Hence, it is statistically significant and we can reject the null hypothesis and
+in favor of our alternative hypothesis. Thus, we would say there's correlation
+between flipper_length_mm and body_mass_g.
 
-
-
-
- 
 # Tutorial for my_knn_cv
 
-A tutorial for my_knn_cv using my_penguins. Predict output class species using covariates bill_length_mm, bill_depth_mm, flipper_length_mm, and body_mass_g.
+A tutorial for my_knn_cv using my_penguins data set. Predict output class
+species using covariates bill_length_mm, bill_depth_mm, flipper_length_mm, and
+body_mass_g using k-nearest neighbors cross-validation classification for a
+training set.
 
-```{r}
+We would first tidy our data by removing all NAs, and select only columns we
+need. And we will then split the data into two parts, training and testing
+depending on number of neighbors we set to. And predict the species of penguins
+based on that.
+
+```{r, echo = FALSE, eval = TRUE}
 #load data and clean it
 data <- my_penguins[, c("species", "bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g")]
 
@@ -108,7 +124,13 @@ table_error <- cbind(c(1:10), train_error, cv_error)
 table_error
 ```
 
-As shown above in the table, I would personally prefer set k_nn to 1 since it's 
-training error is the smallest among all 10 of them. And it also has the smallest
-training misclassifications rates. As a conclusion, I would choose k_nn = 1 no 
-matter which rates I'm looking at.
+As shown above in the table, I would personally prefer set k_nn to 1 since it's
+training error is the smallest among all 10 of them. And it also has the
+smallest CV misclassifications rates. As a conclusion, I would choose k_nn = 1
+no matter which rates I'm looking at. Because lower CV misclassification rates
+incorporates lower number of incorrect predictions.
+
+# Appendix: All code for this Project
+
+```{r ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE}
+```
