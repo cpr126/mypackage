@@ -1,0 +1,29 @@
+Package: mypackage
+Title: Project 3 for STAT 302 AU2021
+Version: 0.0.0.9000
+Authors@R: 
+    person("Peiran", "Chen", , "pc2023@uw.edu", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-5509-6519"))
+Description: This package includes three functions: my_knn_cv, my_t.test, and my_lm.
+License: GPL-3
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Imports:
+    magrittr,
+    palmerpenguins,
+    class,
+    stats,
+    dplyr,
+    conflicted,
+    tidyverse,
+    ggplot2
+Depends: 
+    R (>= 2.10)
+LazyData: true
+VignetteBuilder: knitr
+Suggests: 
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown
+Config/testthat/edition: 3
